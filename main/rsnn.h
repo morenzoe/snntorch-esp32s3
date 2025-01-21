@@ -18,5 +18,6 @@
 
 void synaptic_forward(float input, float *syn, float *mem, float alpha, float beta, float threshold, float *spk);
 void reset_mem(float *syn, float *mem);
+void rsynaptic_forward(float input, float *syn, float *mem, float *spk, float alpha, float beta, float threshold, float *V);
 
 #endif // RSNN_H

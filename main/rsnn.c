@@ -4,7 +4,7 @@
 #include "freertos/task.h" // For delay function
 #include "esp_log.h" // For logging
 
-static const char *TAG = "DEPLOY-ZENKE";
+static const char *TAG = "DEPLOY-RSYNAPTIC";
 
 // Function to simulate the synaptic neuron model
 void synaptic_forward(float input, float *syn, float *mem, float alpha, float beta, float threshold, float *spk) {
@@ -32,6 +32,26 @@ void reset_mem(float *syn, float *mem) {
     *mem = 0.0;
 }
 
+// Function to simulate the RSynaptic neuron model
+void rsynaptic_forward(float input, float *syn, float *mem, float *spk, float alpha, float beta, float threshold, float *V) {
+    // Update synaptic current
+    *syn = alpha * (*syn) + input + (*V) * (*spk);
+
+    // Update membrane potential
+    *mem = beta * (*mem) + (*syn);
+
+    // Generate spike if membrane potential exceeds threshold
+    if (*spk == 1.0) {
+        *mem -= threshold; // Reset by subtraction
+    }
+    
+    if (*mem > threshold) {
+        *spk = 1.0;
+    } else {
+        *spk = 0.0;
+    }
+}
+
 // Main application function
 void app_main(void)
 {
@@ -45,14 +65,18 @@ void app_main(void)
     float syn = 0.0;
     float mem = 0.0;
     float spk = 0.0;
+    float V = 1.0; // Example recurrent weight
 
     for(uint16_t i = 0; i < T; ++i) // for each timestep
     {
         ESP_LOGI(TAG, "  t: %d", i);
         ESP_LOGI(TAG, "  x: %d", input_z[i][0]);
         
-        // Update RSNN
-        synaptic_forward(input_z[i][0], &syn, &mem, alpha, beta, threshold, &spk);
+        // Update Synaptic
+        // synaptic_forward(input_z[i][0], &syn, &mem, alpha, beta, threshold, &spk);
+
+        // Update RSynaptic
+        rsynaptic_forward(input_z[i][0], &syn, &mem, &spk, alpha, beta, threshold, &V);
 
         // Print output
         ESP_LOGI(TAG, "syn: %f", syn);
