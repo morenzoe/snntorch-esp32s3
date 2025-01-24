@@ -6,8 +6,8 @@
 #include <string.h>
 
 // RSNN CONFIG
-#define INPUT_NEURONS_NUM 1
-# define T 11 // total timesteps
+#define INPUT_NEURONS_NUM 3
+#define T 11 // total timesteps
 
 /*****/
 // VARIABLES AND BUFFERS
@@ -16,8 +16,9 @@
 /*****/
 // FUNCTIONS
 void reset_mem(float *syn, float *mem);
-void synaptic_forward(float input, float *syn, float *mem, float alpha, float beta, float threshold, float *spk);
-void rsynaptic_forward(float input, float *syn, float *mem, float *spk, float alpha, const float beta, const float threshold, const float *wrec);
-void rsynaptic_storklike_forward(float input, float *syn, float *mem, float *spk, const float alpha, const float beta, const float threshold, const float *wrec);
+void synaptic_forward(unsigned short int input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold);
+void rsynaptic_forward(unsigned short int input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold, const float *wrec);
+void synaptic_storklike_forward(unsigned short int *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold, int size);
+void rsynaptic_storklike_forward(unsigned short int *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold, const float *wrec, int size);
 
 #endif // RSNN_H
