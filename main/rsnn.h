@@ -15,9 +15,9 @@
 
 /*****/
 // FUNCTIONS
-
-void synaptic_forward(float input, float *syn, float *mem, float alpha, float beta, float threshold, float *spk);
 void reset_mem(float *syn, float *mem);
-void rsynaptic_forward(float input, float *syn, float *mem, float *spk, float alpha, float beta, float threshold, float *V);
+void synaptic_forward(float input, float *syn, float *mem, float alpha, float beta, float threshold, float *spk);
+void rsynaptic_forward(float input, float *syn, float *mem, float *spk, float alpha, const float beta, const float threshold, const float *wrec);
+void rsynaptic_storklike_forward(float input, float *syn, float *mem, float *spk, const float alpha, const float beta, const float threshold, const float *wrec);
 
 #endif // RSNN_H
