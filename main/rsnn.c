@@ -3,8 +3,9 @@
 #include "freertos/FreeRTOS.h" // For delay function
 #include "freertos/task.h" // For delay function
 #include "esp_log.h" // For logging
+#include <string.h> // For memcpy function
 
-static const char *TAG = "DEPLOY-SYNAPTIC_STORKLIKE";
+static const char *TAG = "ESP32S3";
 
 // Function to reset synaptic and membrane potentials
 void reset_mem(float *syn, float *mem) {
@@ -77,11 +78,17 @@ void synaptic_storklike_forward(unsigned short int *input, float *syn, float *me
 }
 
 // Function to simulate the RSynaptic_storklike neuron model with array input and output
-void rsynaptic_storklike_forward(unsigned short int *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold, const float *wrec, int size) {
-    for (int i = 0; i < size; i++) {
-        // Update synaptic current using previous syn
+void rsynaptic_storklike_forward(unsigned short int *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold, const float wrec[INPUT_NEURONS_NUM][INPUT_NEURONS_NUM], int size) {
+    float prev_spk[INPUT_NEURONS_NUM];
+    memcpy(prev_spk, spk, size * sizeof(spk[0])); // Save spk array as prev_spk
+
+    for (int i = 0; i < size; i++) { // loop through neuron input
+        // Update synaptic current using previous syn and all-to-all connections
         float prev_syn = syn[i];
-        syn[i] = alpha[i] * syn[i] + input[i] + wrec[i] * spk[i];
+        syn[i] = alpha[i] * syn[i] + input[i];
+        for (int j = 0; j < size; j++) { // loop through neuron recurrent input
+            syn[i] += wrec[i][j] * prev_spk[j];
+        }
 
         // Update membrane potential using previous syn
         float prev_mem = mem[i];
@@ -107,15 +114,15 @@ void app_main(void)
 
     unsigned short int input_z[T][1][INPUT_NEURONS_NUM] = {
         {{0,0,0}},
-        {{3,3,3}},
-        {{3,3,3}},
-        {{3,3,3}},
-        {{3,3,3}},
-        {{0,0,0}},
-        {{0,0,0}},
-        {{0,0,0}},
-        {{0,0,0}},
-        {{0,0,0}},
+        {{1,1,0}},
+        {{1,0,0}},
+        {{1,0,0}},
+        {{1,0,0}},
+        {{0,1,1}},
+        {{0,0,1}},
+        {{0,0,1}},
+        {{0,0,1}},
+        {{0,1,0}},
         {{0,0,0}}};
 
     const float alpha[INPUT_NEURONS_NUM] = {0.6703, 0.6703, 0.6703}; //dcy_syn
@@ -124,7 +131,11 @@ void app_main(void)
     float syn[INPUT_NEURONS_NUM] = {0.0, 0.0, 0.0};
     float mem[INPUT_NEURONS_NUM] = {0.0, 0.0, 0.0};
     float spk[INPUT_NEURONS_NUM] = {0.0, 0.0, 0.0};
-    const float wrec[INPUT_NEURONS_NUM] = {1.0, 1.0, 1.0}; // Example recurrent weights
+    const float wrec[INPUT_NEURONS_NUM][INPUT_NEURONS_NUM] = {
+        {1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0}
+    }; // Example recurrent weights
 
     for(uint16_t i = 0; i < T; ++i) // for each timestep
     {

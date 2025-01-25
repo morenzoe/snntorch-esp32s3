@@ -19,6 +19,6 @@ void reset_mem(float *syn, float *mem);
 void synaptic_forward(unsigned short int input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold);
 void rsynaptic_forward(unsigned short int input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold, const float *wrec);
 void synaptic_storklike_forward(unsigned short int *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold, int size);
-void rsynaptic_storklike_forward(unsigned short int *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold, const float *wrec, int size);
+void rsynaptic_storklike_forward(unsigned short int *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float *threshold, const float wrec[INPUT_NEURONS_NUM][INPUT_NEURONS_NUM], int size);
 
 #endif // RSNN_H
