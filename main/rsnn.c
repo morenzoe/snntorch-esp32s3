@@ -98,21 +98,21 @@ void app_main(void)
     {
         ESP_LOGI(TAG, "     t: %d", i);
 
-        ESP_LOGI(TAG, "     x: %f, %f, %f", input_z[i][0][0], input_z[i][0][1], input_z[i][0][2]);
+        // ESP_LOGI(TAG, "     x: %f, %f, %f", input_z[i][0][0], input_z[i][0][1], input_z[i][0][2]);
         
         // Fully connected layer1
         linear(input_z[i][0], (const float *)fc_hidden, cur1, INPUT_NEURONS_NUM, REC_NEURONS_NUM);
         
         // Print output
-        ESP_LOGI(TAG, "  cur1: %f, %f", cur1[0], cur1[1]);
+        // ESP_LOGI(TAG, "  cur1: %f, %f", cur1[0], cur1[1]);
 
         // Update RSynaptic_storklike
         rsynaptic_storklike_forward(cur1, syn1, mem1, spk1, alpha1, beta1, threshold1, (const float *)wrec, REC_NEURONS_NUM);
 
         // Print output
-        ESP_LOGI(TAG, "  syn1: %f, %f", syn1[0], syn1[1]);
-        ESP_LOGI(TAG, "  mem1: %f, %f", mem1[0], mem1[1]);
-        ESP_LOGI(TAG, "  spk1: %f, %f", spk1[0], spk1[1]);
+        // ESP_LOGI(TAG, "  syn1: %f, %f", syn1[0], syn1[1]);
+        // ESP_LOGI(TAG, "  mem1: %f, %f", mem1[0], mem1[1]);
+        // ESP_LOGI(TAG, "  spk1: %f, %f", spk1[0], spk1[1]);
 
         // Loop through 5 readout heads
         for (int j = 0; j < READOUT_HEAD_NUM; ++j) {
@@ -120,15 +120,15 @@ void app_main(void)
             linear(spk1, (const float *)fc_outputs[j], cur2[j], REC_NEURONS_NUM, OUTPUT_NEURONS_NUM);
 
             // Print output
-            ESP_LOGI(TAG, "cur2_%d: %f", j, cur2[j][0]);
+            // ESP_LOGI(TAG, "cur2_%d: %f", j, cur2[j][0]);
 
             // Update Synaptic_storklike
             // synaptic_storklike_forward(cur2[j], syn2[j], mem2[j], spk2[j], alpha2[j], beta2[j], threshold2, OUTPUT_NEURONS_NUM);
             synaptic_storklike_forward(cur2[j], syn2[j], mem2[j], alpha2[j], beta2[j], threshold2, OUTPUT_NEURONS_NUM);
 
             // Print output
-            ESP_LOGI(TAG, "syn2_%d: %f", j, syn2[j][0]);
-            ESP_LOGI(TAG, "mem2_%d: %f", j, mem2[j][0]);
+            // ESP_LOGI(TAG, "syn2_%d: %f", j, syn2[j][0]);
+            // ESP_LOGI(TAG, "mem2_%d: %f", j, mem2[j][0]);
             // ESP_LOGI(TAG, "spk2_%d: %f", j, spk2[j][0]);
 
             output[0] += mem2[j][0];
