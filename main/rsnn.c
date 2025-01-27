@@ -14,26 +14,27 @@ void reset_mem(float *syn, float *mem) {
 }
 
 // Function to simulate the Synaptic_storklike neuron model with array input and output
-void synaptic_storklike_forward(float *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float threshold, int size) {
+// void synaptic_storklike_forward(float *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float threshold, int size) {
+void synaptic_storklike_forward(float *input, float *syn, float *mem, const float *alpha, const float *beta, const float threshold, int size) {
     for (int i = 0; i < size; i++) {
         // Update synaptic current
         float prev_syn = syn[i];
         syn[i] = alpha[i] * syn[i] + input[i];
 
         // Update membrane potential
-        float prev_mem = mem[i];
+        // float prev_mem = mem[i];
         mem[i] = beta[i] * mem[i] + (1 - beta[i]) * prev_syn; // scl_mem = 1-dcy_mem = 1-beta
 
-        // Generate spike if membrane potential exceeds threshold
-        if (prev_mem > threshold) {
-            spk[i] = 1.0;
-        } else {
-            spk[i] = 0.0;
-        }
+        // // Generate spike if membrane potential exceeds threshold
+        // if (prev_mem > threshold) {
+        //     spk[i] = 1.0;
+        // } else {
+        //     spk[i] = 0.0;
+        // }
 
-        if (spk[i] == 1.0) {
-            mem[i] -= threshold; // Reset by subtraction
-        }
+        // if (spk[i] == 1.0) {
+        //     mem[i] -= threshold; // Reset by subtraction
+        // }
     }
 }
 
@@ -113,19 +114,34 @@ void app_main(void)
         ESP_LOGI(TAG, "  mem1: %f, %f", mem1[0], mem1[1]);
         ESP_LOGI(TAG, "  spk1: %f, %f", spk1[0], spk1[1]);
 
-        // Fully connected layer2
-        linear(spk1, (const float *)fc_outputs_0, cur2_0, REC_NEURONS_NUM, OUTPUT_NEURONS_NUM);
+        // Loop through 5 readout heads
+        for (int j = 0; j < READOUT_HEAD_NUM; ++j) {
+            // Fully connected layer2
+            linear(spk1, (const float *)fc_outputs[j], cur2[j], REC_NEURONS_NUM, OUTPUT_NEURONS_NUM);
+
+            // Print output
+            ESP_LOGI(TAG, "cur2_%d: %f", j, cur2[j][0]);
+
+            // Update Synaptic_storklike
+            // synaptic_storklike_forward(cur2[j], syn2[j], mem2[j], spk2[j], alpha2[j], beta2[j], threshold2, OUTPUT_NEURONS_NUM);
+            synaptic_storklike_forward(cur2[j], syn2[j], mem2[j], alpha2[j], beta2[j], threshold2, OUTPUT_NEURONS_NUM);
+
+            // Print output
+            ESP_LOGI(TAG, "syn2_%d: %f", j, syn2[j][0]);
+            ESP_LOGI(TAG, "mem2_%d: %f", j, mem2[j][0]);
+            // ESP_LOGI(TAG, "spk2_%d: %f", j, spk2[j][0]);
+
+            output[0] += mem2[j][0];
+            output[1] += mem2[j][1];
+
+        }
+
+        output[0] /= READOUT_HEAD_NUM;
+        output[1] /= READOUT_HEAD_NUM;
 
         // Print output
-        ESP_LOGI(TAG, "cur2_0: %f", cur2_0[0]);
+        ESP_LOGI(TAG, "output: %f, %f", output[0], output[1]);
 
-        // Update Synaptic_storklike
-        synaptic_storklike_forward(cur2_0, syn2_0, mem2_0, spk2_0, alpha2_0, beta2_0, threshold2_0, OUTPUT_NEURONS_NUM);
-
-        // Print output
-        ESP_LOGI(TAG, "syn2_0: %f", syn2_0[0]);
-        ESP_LOGI(TAG, "mem2_0: %f", mem2_0[0]);
-        ESP_LOGI(TAG, "spk2_0: %f", spk2_0[0]);
         ESP_LOGI(TAG, "----------------------");
     }
 }
