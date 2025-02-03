@@ -1,8 +1,6 @@
 #ifndef RSNN_H
 #define RSNN_H
 
-#include "input.h"
-#include "state_dict.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -48,5 +46,6 @@ void reset_mem(float *syn, float *mem);
 void synaptic_storklike_forward(float *input, float *syn, float *mem, const float *alpha, const float *beta, const float threshold, int size);
 void rsynaptic_storklike_forward(float *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float threshold, const float *wrec, int size);
 void linear(float *input, const float *weight, float *output, int input_size, int hidden_size);
+void unpack_input(const unsigned char *packed_input, float *unpacked_input, int size, int pos);
 
 #endif // RSNN_H
