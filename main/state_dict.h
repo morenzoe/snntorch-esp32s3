@@ -1,10 +1,17 @@
+#pragma once
+
+#include <stdint.h>
 #include "input.h"
+
 #define REC_NEURONS_NUM 1024
 #define OUTPUT_NEURONS_NUM 2
 #define READOUT_HEAD_NUM 5
 
+// Timer
+extern int64_t inference_time;
+
 // Input
-extern unsigned char input_old[INPUT_NEURONS_NUM / 8];
+extern uint8_t input_old[INPUT_NEURONS_NUM / 8];
 
 // Fully Connected 1
 extern float cur1[REC_NEURONS_NUM];
@@ -16,8 +23,8 @@ extern const float beta1[REC_NEURONS_NUM]; //dcy_mem
 extern const float threshold1;
 extern float syn1[REC_NEURONS_NUM];
 extern float mem1[REC_NEURONS_NUM];
-extern unsigned char spk1[REC_NEURONS_NUM / 8];
-extern unsigned char spk1_old[REC_NEURONS_NUM / 8];
+extern uint8_t spk1[REC_NEURONS_NUM / 8];
+extern uint8_t spk1_old[REC_NEURONS_NUM / 8];
 extern const float lif_hidden_recurrent_weight[REC_NEURONS_NUM][REC_NEURONS_NUM];
 
 // Readout Head

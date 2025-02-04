@@ -1,14 +1,8 @@
 #include "input.h"
 #include "state_dict.h"
-// #include "state_dict_example.h"
 #include "rsnn.h"
-#include <stdlib.h> // For random numbers
-#include "freertos/FreeRTOS.h" // For delay function
-#include "freertos/task.h" // For delay function
-#include "esp_log.h" // For logging
-#include <string.h> // For memcpy function
 
-static const char *TAG = "";
+// static const char *TAG = "";
 
 // Function to simulate the Synaptic_storklike neuron model with array input and output
 // void synaptic_storklike_forward(float *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float threshold, int size) {
@@ -87,9 +81,10 @@ void linear(const unsigned char *input, const float *weight, float *output, int 
 // Main application function
 void app_main(void)
 {
-    ESP_LOGI(TAG, "Initializing RSNN...");
-    ESP_LOGI(TAG, "INPUT_NEURONS_NUM: %d", INPUT_NEURONS_NUM);
-    ESP_LOGI(TAG, "REC_NEURONS_NUM: %d", REC_NEURONS_NUM);
+    printf("x-axis, y-axis, inference_time\n");
+    // ESP_LOGI(TAG, "Initializing RSNN...");
+    // ESP_LOGI(TAG, "INPUT_NEURONS_NUM: %d", INPUT_NEURONS_NUM);
+    // ESP_LOGI(TAG, "REC_NEURONS_NUM: %d", REC_NEURONS_NUM);
     // ESP_LOGI(TAG, "Size of %d", sizeof(input_z));
 
     // ESP_LOGI(TAG, "input_old: %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d", input_old[0], input_old[1], input_old[2], input_old[3], input_old[4], input_old[5], input_old[6], input_old[7], input_old[8], input_old[9], input_old[10], input_old[11], input_old[12]);
@@ -102,7 +97,8 @@ void app_main(void)
     for(int i = 0; i < T; ++i) // for each timestep
     {
         // start time
-        ESP_LOGI(TAG, "     t: %d", i);
+        inference_time = esp_timer_get_time();
+        // ESP_LOGI(TAG, "     t: %d", i);
         // ESP_LOGI(TAG, "input_z: %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d", input_z[i][0][0], input_z[i][0][1], input_z[i][0][2], input_z[i][0][3], input_z[i][0][4], input_z[i][0][5], input_z[i][0][6], input_z[i][0][7], input_z[i][0][8], input_z[i][0][9], input_z[i][0][10], input_z[i][0][11]);
         // ESP_LOGI(TAG, "input_z: %d", input_z[i][0][0]);
 
@@ -161,9 +157,10 @@ void app_main(void)
         output[0] /= READOUT_HEAD_NUM;
         output[1] /= READOUT_HEAD_NUM;
         // stop time
+        inference_time = esp_timer_get_time() - inference_time;
 
         // Print output
-        ESP_LOGI(TAG, "output: %f, %f", output[0], output[1]); // print time
+        printf("%f, %f, %lld\n", output[0], output[1], inference_time); // print time
 
         // ESP_LOGI(TAG, "------------------------------------");
     }
