@@ -2,8 +2,6 @@
 #include "state_dict.h"
 #include "rsnn.h"
 
-// static const char *TAG = "";
-
 // Function to simulate the Synaptic_storklike neuron model with array input and output
 // void synaptic_storklike_forward(float *input, float *syn, float *mem, float *spk, const float *alpha, const float *beta, const float threshold, int size) {
 void synaptic_storklike_forward(float *input, float *syn, float *mem, const float *alpha, const float *beta, const float threshold, int size) {
@@ -49,10 +47,10 @@ void rsynaptic_storklike_forward(float *input, float *syn, float *mem, unsigned 
         mem[i] = beta[i] * mem[i] + (1 - beta[i]) * prev_syn; // scl_mem = 1-dcy_mem = 1-beta
 
         // Generate spike if membrane potential exceeds threshold
-        if (prev_mem > threshold) {
-            spk[i / 8] |= (1 << (i % 8));
-        } else {
+        if (prev_mem <= threshold) {
             spk[i / 8] &= ~(1 << (i % 8));
+        } else {
+            spk[i / 8] |= (1 << (i % 8));
         }
 
         if (spk[i / 8] & (1 << (i % 8))) {
@@ -78,9 +76,13 @@ void linear(const unsigned char *input, const float *weight, float *output, int 
     }
 }
 
+static const char *TAG = "indy_20160622_01";
+
 // Main application function
 void app_main(void)
 {
+    run_time = esp_timer_get_time();
+    ESP_LOGI(TAG, "flip if-else");
     printf("x-axis, y-axis, inference_time\n");
     // ESP_LOGI(TAG, "Initializing RSNN...");
     // ESP_LOGI(TAG, "INPUT_NEURONS_NUM: %d", INPUT_NEURONS_NUM);
@@ -164,4 +166,7 @@ void app_main(void)
 
         // ESP_LOGI(TAG, "------------------------------------");
     }
+
+    run_time = esp_timer_get_time() - run_time;
+    ESP_LOGI(TAG, "Total run time: %lld us", run_time);
 }

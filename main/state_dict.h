@@ -9,6 +9,7 @@
 
 // Timer
 extern int64_t inference_time;
+extern int64_t run_time;
 
 // Input
 extern uint8_t input_old[INPUT_NEURONS_NUM / 8];
