@@ -10,6 +10,11 @@
 // Timer
 extern int64_t inference_time;
 extern int64_t run_time;
+extern int64_t linear1_time;
+extern int64_t memcpy1_time;
+extern int64_t memcpy2_time;
+extern int64_t rsynaptic_time;
+extern int64_t readout_time;
 
 // Input
 extern uint8_t input_old[INPUT_NEURONS_NUM / 8];
